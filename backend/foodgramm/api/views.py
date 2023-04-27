@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -7,20 +8,17 @@ from recipes.models import (
     Ingredient,
     Favourite,
     ShoppingCart,
-    RecipeIngredient
 )
 from rest_framework.decorators import action
-from rest_framework import viewsets, views, status
+from rest_framework import viewsets, status
 from users.models import CustomUser, Subscription
 from .serializers import (
-    UsersSerializer,
     RecipesSerializer,
     TagsSerializer,
     IngredientsSerializer,
-    FavouriteSerializer,
-    ShoppingCartSerializer,
     UserListSerializer,
-    SubscriptionSerializer
+    SubscriptionSerializer,
+    ShortRecipeSerializer
 )
 from rest_framework.pagination import PageNumberPagination
 from djoser.views import UserViewSet
@@ -95,62 +93,58 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    # @action(detail=True, methods=['post', 'delete'], url_path='subscribe')
-    # def subscribe(self, request, id):
-
-
-def download_shopping_cart(request):
-    ingredients = Ingredient.objects.filter(reci__in_carts__user=request.user).values(
-        'ingredient__name', 'ingredient__measurement_unit'
-    )
-    response = HttpResponse(content_type='text/plain')
-    response['Content-Disposition'] = 'attachment; filename="shopping_cart.txt"'
-
-    for ing in ingredients:
-        response.write(f"{ing.name} - {ing.price}\n")
-
-    return response
-
-
-class ShoppingCartViewSet(viewsets.ModelViewSet):
-    queryset = ShoppingCart.objects.all()
-    serializer_class = ShoppingCartSerializer
-
-    def create(self, request, pk):
-        recipes = Recipe.objects.get(pk=pk)
-        ShoppingCart.objects.create(
-            user=request.user, recipe=recipes
-        )
-        return HttpResponse(status=201)
-
-    def destroy(self, request, pk):
-        instance = ShoppingCart.objects.get(
-            user=request.user, recipe=pk
-        )
-        self.perform_destroy(instance)
-        return HttpResponse(status=400)
-
-    def perform_destroy(self, instance):
-        instance.delete()
-
-
-class FavouriteViewSet(viewsets.ModelViewSet):
-    queryset = Favourite.objects.all()
-    serializer_class = FavouriteSerializer
-
-    def create(self, request, pk):
-        recipes = Recipe.objects.get(pk=pk)
-        Favourite.objects.create(
-            user=request.user, recepis=recipes
-        )
-        return HttpResponse(status=201)
-
-    def destroy(self, request, pk):
+    @action(detail=True, methods=['post', 'delete'], url_path='favorite')
+    def favorite(self, request, pk=None):
+        if request.method == 'POST':
+            recipe = Recipe.objects.get(pk=pk)
+            user = request.user
+            serializer = ShortRecipeSerializer(recipe)
+            Favourite.objects.create(recipe=recipe, user=user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        recipe = Recipe.objects.get(pk=pk)
         instance = Favourite.objects.get(
-            user=request.user, recepis=pk
+            recipe=recipe.id, user=request.user
         )
-        self.perform_destroy(instance)
+        instance.delete()
         return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
-    def perform_destroy(self, instance):
+    @action(detail=True, methods=['post', 'delete'], url_path='shopping_cart')
+    def shopping_cart(self, request, pk=None):
+        if request.method == 'POST':
+            recipe = Recipe.objects.get(pk=pk)
+            user = request.user
+            serializer = ShortRecipeSerializer(recipe)
+            ShoppingCart.objects.create(recipe=recipe, user=user)
+            return Response(
+                data=serializer.data, status=status.HTTP_201_CREATED
+            )
+        recipe = Recipe.objects.get(pk=pk)
+        instance = ShoppingCart.objects.get(
+            recipe=recipe.id, user=request.user
+        )
         instance.delete()
+        return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=['get'], url_path='download_shopping_cart')
+    def download_shopping_cart(self, request):
+        user = self.request.user
+
+        filename = f'{user.username}_shopping_list.txt'
+        shopping_list = []
+        ingredients = Ingredient.objects.filter(
+            recipeingredient__recipe__in_carts__user=user
+        ).values(
+            'name',
+            measurement=F('measurement_unit')
+        ).annotate(amount=Sum('recipeingredient__amount'))
+
+        for ing in ingredients:
+            shopping_list.append(
+                f'{ing["name"]}: {ing["amount"]} {ing["measurement"]}'
+            )
+        shopping_list = '\n'.join(shopping_list)
+        response = HttpResponse(
+            shopping_list, content_type='text.txt; charset=utf-8'
+        )
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response

@@ -4,9 +4,6 @@ from .views import (
     RecipesViewSet,
     TagsViewSet,
     IngredientsViewSet,
-    FavouriteViewSet,
-    ShoppingCartViewSet,
-    download_shopping_cart
 )
 from rest_framework.routers import DefaultRouter
 
@@ -20,17 +17,7 @@ router.register('ingredients', IngredientsViewSet)
 
 
 urlpatterns = [
-    path('recipes/<int:pk>/favorite/', FavouriteViewSet.as_view(
-        {'post': 'create',
-         'delete': 'destroy'}
-    )),
-    path('recipes/download_shopping_cart/', download_shopping_cart),
-    path('recipes/<int:pk>/shopping_cart/', ShoppingCartViewSet.as_view(
-        {'post': 'create',
-         'delete': 'destroy'}
-    )),
     path('auth/', include('djoser.urls.authtoken')),
     path('', include(router.urls)),
-    path('', include('djoser.urls')),
-    
+    path('', include('djoser.urls'))
 ]

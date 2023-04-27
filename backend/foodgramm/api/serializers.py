@@ -3,8 +3,6 @@ from recipes.models import (
     Recipe,
     Tag,
     Ingredient,
-    Favourite,
-    ShoppingCart,
     RecipeIngredient
 )
 from django.contrib.auth import get_user_model
@@ -76,8 +74,8 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = 'id', 'name', 'image', 'cooking_time'
-        read_only_fields = '__all__',
+        fields = ('id', 'name', 'image', 'cooking_time')
+        # read_only_fields = '__all__',
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
@@ -150,7 +148,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         fields = ('id', 'amount')
 
 
-class RecipeSerializer(serializers.ModelSerializer):
+class RecipeReadSerializer(serializers.ModelSerializer):
 
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -204,7 +202,7 @@ class RecipesSerializer(serializers.ModelSerializer):
         )
 
     def to_representation(self, instance):
-        serializer = RecipeSerializer(instance)
+        serializer = RecipeReadSerializer(instance)
         return serializer.data
 
     def create(self, validated_data):
@@ -221,15 +219,15 @@ class RecipesSerializer(serializers.ModelSerializer):
         return recipe
 
 
-class ShoppingCartSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ShoppingCart
-        fields = '__all__'
-
-
-class FavouriteSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Favourite
-        fields = '__all__'
+# class ShoppingCartSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = ShoppingCart
+#         fields = '__all__'
+#
+#
+# class FavouriteSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = Favourite
+#         fields = '__all__'
