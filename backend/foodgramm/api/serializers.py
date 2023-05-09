@@ -1,11 +1,15 @@
-from rest_framework import serializers
-from recipes.models import (
-    Recipe,
-    Tag,
-    Ingredient,
-    RecipeIngredient
-)
 from django.contrib.auth import get_user_model
+from djoser.serializers import UserSerializer
+from drf_extra_fields.fields import Base64ImageField
+from recipes.models import (
+    Favourite,
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    ShoppingCart,
+    Tag
+)
+from rest_framework import serializers
 from users.models import CustomUser, Subscription
 
 User = get_user_model()
@@ -32,7 +36,7 @@ class UsersSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserListSerializer(serializers.ModelSerializer):
+class UserListSerializer(UserSerializer):
 
     is_subscribed = serializers.SerializerMethodField()
 
@@ -45,11 +49,11 @@ class UserListSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request')
-        if user == None:
+        if user is None or user.user.is_anonymous:
             return False
         author = Subscription.objects.filter(
-            subscriber=user.user, subscription=obj.id)
-        if obj.id == user.id:
+            subscriber=user.user, subscription=obj.pk)
+        if obj.pk == user.user.pk:
             return False
         return author.exists()
 
@@ -75,7 +79,6 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
-        # read_only_fields = '__all__',
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
@@ -156,6 +159,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     ingredients = IngredientAmountSerializer(
         source='recipeingredient_set',
         read_only=True, many=True)
+    image = Base64ImageField()
 
     class Meta:
         model = Recipe
@@ -167,16 +171,18 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             'is_favorited',
             'is_in_shopping_cart',
             'name',
-            # 'image',
+            'image',
             'text',
             'cooking_time'
         )
 
     def get_is_favorited(self, obj):
-        return True
+        user = self.context.get('request').user
+        return Favourite.objects.filter(user=user, recipe=obj).exists()
 
     def get_is_in_shopping_cart(self, obj):
-        return True
+        user = self.context.get('request').user
+        return ShoppingCart.objects.filter(user=user, recipe=obj).exists()
 
 
 class RecipesSerializer(serializers.ModelSerializer):
@@ -187,6 +193,7 @@ class RecipesSerializer(serializers.ModelSerializer):
     )
     author = UserListSerializer(read_only=True)
     ingredients = RecipeIngredientSerializer(many=True)
+    image = Base64ImageField()
 
     class Meta:
         model = Recipe
@@ -196,7 +203,7 @@ class RecipesSerializer(serializers.ModelSerializer):
             'author',
             'ingredients',
             'name',
-            # 'image',
+            'image',
             'text',
             'cooking_time'
         )
@@ -218,16 +225,16 @@ class RecipesSerializer(serializers.ModelSerializer):
             )
         return recipe
 
-
-# class ShoppingCartSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = ShoppingCart
-#         fields = '__all__'
-#
-#
-# class FavouriteSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = Favourite
-#         fields = '__all__'
+    def update(self, instance, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        instance.ingredients.clear()
+        instance.tags.clear()
+        for ingredient_data in ingredients:
+            RecipeIngredient.objects.get_or_create(
+                recipe=instance,
+                ingredient=ingredient_data.get('id'),
+                amount=ingredient_data['amount']
+            )
+        instance.tags.set(tags)
+        return super().update(instance, validated_data)

@@ -1,6 +1,7 @@
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
+from django.db import models
+
 User = get_user_model()
 
 
@@ -42,6 +43,12 @@ class Recipe(models.Model):
         verbose_name='время добавления',
         auto_now_add=True,
     )
+
+    class Meta:
+        ordering = ('-pub_date',)
+
+    def __str__(self):
+        return self.name
 
 
 class Tag(models.Model):
@@ -97,6 +104,12 @@ class Favourite(models.Model):
         on_delete=models.CASCADE
     )
 
+    class Meta:
+        unique_together = ('recipe', 'user')
+
+    def __str__(self):
+        return self.recipe
+
 
 class ShoppingCart(models.Model):
     """Рецепты в списке покупок."""
@@ -112,6 +125,12 @@ class ShoppingCart(models.Model):
         verbose_name='пользователь',
         on_delete=models.CASCADE
     )
+
+    class Meta:
+        unique_together = ('recipe', 'user')
+
+    def __str__(self):
+        return self.recipe
 
 
 class RecipeIngredient(models.Model):
