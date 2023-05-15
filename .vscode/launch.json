@@ -8,7 +8,7 @@
             "name": "Python: Django",
             "type": "python",
             "request": "launch",
-            "program": "/d/Dev/graduation project/foodgram-project-react\\backend\\foodgramm\\manage.py",
+            "program": "/d/Dev/graduation project/foodgram-project-react\\backend\\manage.py",
             "args": [
                 "runserver"
             ],
