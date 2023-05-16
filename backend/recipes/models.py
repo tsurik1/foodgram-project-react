@@ -53,6 +53,9 @@ class Recipe(models.Model):
     )
 
     class Meta:
+        indexes = [
+            models.Index(fields=['pub_date'], name='pub_date_idx'),
+        ]
         ordering = ('-pub_date',)
         verbose_name = "Рецепт"
         verbose_name_plural = "Рецепты"
@@ -129,3 +132,61 @@ class RecipeIngredient(models.Model):
     class Meta:
         verbose_name = "ингредиент в рецепте"
         verbose_name_plural = "ингредиенты в рецепте"
+
+
+class Favorite(models.Model):
+    """Избранные рецепты."""
+
+    recipe = models.ForeignKey(
+        Recipe,
+        verbose_name='избранное',
+        on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        User,
+        verbose_name='пользователь',
+        on_delete=models.CASCADE
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'user'],
+                name='unique_favorite'
+            )
+        ]
+        verbose_name = "избранный рецепт"
+        verbose_name_plural = "избранные рецепты"
+
+    def __str__(self):
+        return self.recipe
+
+
+class ShoppingCart(models.Model):
+    """Рецепты в списке покупок."""
+
+    recipe = models.ForeignKey(
+        Recipe,
+        related_name='in_carts',
+        verbose_name='рецепт',
+        on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        User,
+        related_name='recipeto',
+        verbose_name='пользователь',
+        on_delete=models.CASCADE
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'user'],
+                name='unique_cart'
+            )
+        ]
+        verbose_name = "рецепт в корзине"
+        verbose_name_plural = "рецепты в корзине"
+
+    def __str__(self):
+        return self.recipe
