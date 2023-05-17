@@ -1,13 +1,10 @@
-from djoser.serializers import (
+from djoser.serializers import \
     UserCreateSerializer as DjoserUserCreateSerializer
-)
 from djoser.serializers import UserSerializer as DjoserUserSerializer
-
-from rest_framework import serializers
-
 from recipes import ShortRecipeSerializer
-from users.models import User, Subscription
 from recipes.models import Recipe
+from rest_framework import serializers
+from users.models import Subscription, User
 
 
 class UserSerializer(DjoserUserCreateSerializer):

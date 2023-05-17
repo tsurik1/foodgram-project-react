@@ -1,10 +1,11 @@
 import json
+from random import choice
 
 from django.core.management.base import BaseCommand
-from random import choice
+from faker import Faker
 from recipes.models import Ingredient, Tag
 from users.models import User
-from faker import Faker
+
 
 class Command(BaseCommand):
     help = 'Загрузка данных в базу'

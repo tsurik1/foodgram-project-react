@@ -1,0 +1,10 @@
+from rest_framework import serializers
+
+from recipes.models import Tag
+
+
+class TagsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tag
+        fields = ('id', 'name', 'color', 'slug',)
