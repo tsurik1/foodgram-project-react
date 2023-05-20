@@ -2,9 +2,15 @@ from django.urls import include, path
 
 from rest_framework.routers import DefaultRouter
 
-from api.views import SubscribeView, SubscriptionView
+from api.views import (SubscribeView, SubscriptionView,
+                       RecipesViewSet, TagsViewSet, IngredientsViewSet
+                       )
 
 router = DefaultRouter()
+
+router.register('recipes', RecipesViewSet, basename='recipes')
+router.register('tags', TagsViewSet)
+router.register('ingredients', IngredientsViewSet)
 
 urlpatterns = [
     path('users/subscriptions/', SubscriptionView.as_view()),

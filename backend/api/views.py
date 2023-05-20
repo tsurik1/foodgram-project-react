@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+# from django.db.models import Count
 
 from rest_framework import status, viewsets
 from rest_framework.generics import ListAPIView
@@ -8,10 +9,11 @@ from rest_framework.views import APIView
 
 from users.models import Subscription, User
 from recipes.models import Ingredient, Recipe, Tag
-from api.pagination import MyBasePagination
-from serializer.ingredients import IngredientsSerializer
-from serializer.tags import TagsSerializer
-from serializer.users import SubscriptionSerializer
+from .pagination import MyBasePagination
+from .serializer.ingredients import IngredientsSerializer
+from .serializer.tags import TagsSerializer
+from .serializer.users import SubscriptionSerializer
+from .serializer.recipes import RecipeReadSerializer, RecipesSerializer
 
 
 class SubscriptionView(ListAPIView):
@@ -50,6 +52,15 @@ class SubscribeView(APIView):
 
 class RecipesViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
+
+    def get_serializer_class(self):
+        if self.action in ('list', 'retrieve'):
+            return RecipeReadSerializer
+        return RecipesSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+    # queryset = Recipe.objects.annotate(posts_count=Count('posts'))
 
 
 class TagsViewSet(viewsets.ReadOnlyModelViewSet):
