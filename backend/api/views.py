@@ -6,13 +6,14 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.validators import ValidationError
 
 from users.models import Subscription, User
-from recipes.models import Ingredient, Recipe, Tag
+from recipes.models import Ingredient, Recipe, Tag, ShoppingCart, Favorite
 from .pagination import MyBasePagination
 from .serializer.ingredients import IngredientsSerializer
 from .serializer.tags import TagsSerializer
-from .serializer.users import SubscriptionSerializer
+from .serializer.users import SubscriptionSerializer, ShortRecipeSerializer
 from .serializer.recipes import RecipeReadSerializer, RecipesSerializer
 
 
@@ -63,14 +64,51 @@ class RecipesViewSet(viewsets.ModelViewSet):
     # queryset = Recipe.objects.annotate(posts_count=Count('posts'))
 
 
-class TagsViewSet(viewsets.ReadOnlyModelViewSet):
+class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagsSerializer
     pagination_class = None
 
 
-class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientsSerializer
-    search_fields = ['^name']
+    search_fields = ['name']
     pagination_class = None
+
+
+class AddDelView(APIView):
+
+    def add_recipe(self, model, request, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        user = self.request.user
+        if model.objects.filter(recipe=recipe, user=user).exists():
+            raise ValidationError('Рецепт уже добавлен')
+        model.objects.create(recipe=recipe, user=user)
+        serializer = ShortRecipeSerializer(recipe)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+    def del_recipe(self, model, request, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        user = self.request.user
+        obj = get_object_or_404(model, recipe=recipe, user=user)
+        obj.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ShoppingCartView(AddDelView):
+
+    def post(self, request, pk):
+        return self.add_recipe(ShoppingCart, request, pk)
+
+    def delete(self, request, pk):
+        return self.del_recipe(ShoppingCart, request, pk)
+
+
+class FavoriteView(AddDelView):
+
+    def post(self, request, pk):
+        return self.add_recipe(Favorite, request, pk)
+
+    def delete(self, request, pk):
+        return self.del_recipe(Favorite, request, pk)
