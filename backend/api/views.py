@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from django.db.models import Sum
+from django.http import HttpResponse
 # from django.db.models import Count
 
 from rest_framework import status, viewsets
@@ -9,7 +11,9 @@ from rest_framework.views import APIView
 from rest_framework.validators import ValidationError
 
 from users.models import Subscription, User
-from recipes.models import Ingredient, Recipe, Tag, ShoppingCart, Favorite
+from recipes.models import (
+    Ingredient, Recipe, Tag, ShoppingCart, Favorite, RecipeIngredient
+)
 from .pagination import MyBasePagination
 from .serializer.ingredients import IngredientsSerializer
 from .serializer.tags import TagsSerializer
@@ -112,3 +116,28 @@ class FavoriteView(AddDelView):
 
     def delete(self, request, pk):
         return self.del_recipe(Favorite, request, pk)
+
+
+class DownloadShoppingCart(ListAPIView):
+
+    def get(self, request):
+        user = self.request.user
+        filename = f'{user.username}_shopping_list.txt'
+        shopping_list = []
+        ingredients = RecipeIngredient.objects.filter(
+            recipe__in_carts__user=user
+        ).values(
+            'ingredient__name', 'ingredient__measurement_unit'
+        ).annotate(amount=Sum('amount'))
+
+        for ing in ingredients:
+            shopping_list.append(
+                f"{ing['ingredient__name']}: "
+                f"{ing['amount']} {ing['ingredient__measurement_unit']}"
+            )
+        shopping_list = '\n'.join(shopping_list)
+        response = HttpResponse(
+            shopping_list, content_type='text.txt; charset=utf-8'
+        )
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        return response
