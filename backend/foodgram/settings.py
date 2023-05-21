@@ -3,7 +3,8 @@ import random
 import string
 from pathlib import Path
 
-secret_key = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(50))
+secret_key = ''.join(random.SystemRandom().choice(
+    string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(50))
 
 # Use the new secret key in your Django project's settings file
 SECRET_KEY = secret_key
