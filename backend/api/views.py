@@ -14,6 +14,7 @@ from users.models import Subscription, User
 from recipes.models import (
     Ingredient, Recipe, Tag, ShoppingCart, Favorite, RecipeIngredient
 )
+from .permissions import AuthorOrReadOnly
 from .pagination import MyBasePagination
 from .serializer.ingredients import IngredientsSerializer
 from .serializer.tags import TagsSerializer
@@ -57,6 +58,7 @@ class SubscribeView(APIView):
 
 class RecipesViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
+    permission_classes = (AuthorOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
@@ -65,7 +67,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-    # queryset = Recipe.objects.annotate(posts_count=Count('posts'))
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -101,6 +102,7 @@ class AddDelView(APIView):
 
 
 class ShoppingCartView(AddDelView):
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, pk):
         return self.add_recipe(ShoppingCart, request, pk)
@@ -110,6 +112,7 @@ class ShoppingCartView(AddDelView):
 
 
 class FavoriteView(AddDelView):
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, pk):
         return self.add_recipe(Favorite, request, pk)
@@ -119,6 +122,7 @@ class FavoriteView(AddDelView):
 
 
 class DownloadShoppingCart(ListAPIView):
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         user = self.request.user
