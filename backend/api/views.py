@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.db.models import Sum
 from django.http import HttpResponse
-# from django.db.models import Count
+from django_filters import rest_framework as filters
 
 from rest_framework import status, viewsets
 from rest_framework.generics import ListAPIView
@@ -16,10 +16,11 @@ from recipes.models import (
 )
 from .permissions import AuthorOrReadOnly
 from .pagination import MyBasePagination
-from .serializer.ingredients import IngredientsSerializer
+from .filters import IngredientFilter
+from .serializer.ingredients import IngredientSerializer
 from .serializer.tags import TagsSerializer
 from .serializer.users import SubscriptionSerializer, ShortRecipeSerializer
-from .serializer.recipes import RecipeReadSerializer, RecipesSerializer
+from .serializer.recipes import RecipeReadSerializer, RecipeSerializer
 
 
 class SubscriptionView(ListAPIView):
@@ -56,14 +57,14 @@ class SubscribeView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class RecipesViewSet(viewsets.ModelViewSet):
+class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (AuthorOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
             return RecipeReadSerializer
-        return RecipesSerializer
+        return RecipeSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -77,8 +78,9 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
-    serializer_class = IngredientsSerializer
-    search_fields = ['name']
+    serializer_class = IngredientSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = IngredientFilter
     pagination_class = None
 
 

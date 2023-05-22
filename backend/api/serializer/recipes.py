@@ -55,7 +55,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         return self.in_list(obj, ShoppingCart)
 
 
-class RecipesSerializer(serializers.ModelSerializer):
+class RecipeSerializer(serializers.ModelSerializer):
 
     tags = serializers.PrimaryKeyRelatedField(
         many=True,

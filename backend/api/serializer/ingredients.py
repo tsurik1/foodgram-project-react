@@ -4,7 +4,7 @@ from rest_framework import serializers
 from recipes.models import RecipeIngredient
 
 
-class IngredientsSerializer(serializers.ModelSerializer):
+class IngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ingredient
