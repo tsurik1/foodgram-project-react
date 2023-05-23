@@ -6,6 +6,7 @@ from recipes.models import (
 )
 from .ingredients import IngredientAmountSerializer
 from .users import UserListSerializer
+from .tags import TagSerializer
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
@@ -25,6 +26,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     ingredients = IngredientAmountSerializer(
         source='recipeingredient_set',
         read_only=True, many=True)
+    tags = TagSerializer(many=True)
     image = Base64ImageField()
 
     class Meta:

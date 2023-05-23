@@ -16,9 +16,9 @@ from recipes.models import (
 )
 from .permissions import AuthorOrReadOnly
 from .pagination import MyBasePagination
-from .filters import IngredientFilter
+from .filters import IngredientFilter, RecipeFilter
 from .serializer.ingredients import IngredientSerializer
-from .serializer.tags import TagsSerializer
+from .serializer.tags import TagSerializer
 from .serializer.users import SubscriptionSerializer, ShortRecipeSerializer
 from .serializer.recipes import RecipeReadSerializer, RecipeSerializer
 
@@ -60,6 +60,9 @@ class SubscribeView(APIView):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = (AuthorOrReadOnly,)
+    pagination_class = MyBasePagination
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
@@ -72,7 +75,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
-    serializer_class = TagsSerializer
+    serializer_class = TagSerializer
     pagination_class = None
 
 
@@ -85,6 +88,8 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class AddDelView(APIView):
+
+    permission_classes = (IsAuthenticated,)
 
     def add_recipe(self, model, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
