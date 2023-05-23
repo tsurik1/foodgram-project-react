@@ -89,8 +89,6 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 class AddDelView(APIView):
 
-    permission_classes = (IsAuthenticated,)
-
     def add_recipe(self, model, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
