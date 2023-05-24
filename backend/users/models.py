@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from rest_framework.validators import ValidationError
+
 
 class User(AbstractUser):
     first_name = models.CharField(max_length=150, verbose_name='Имя')
@@ -48,5 +50,9 @@ class Subscription(models.Model):
                 name='unique_subscription'
             )
         ]
-        verbose_name = "Подписка"
-        verbose_name_plural = "Подписки"
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+
+    def clean(self):
+        if self.subscriber == self.subscription:
+            raise ValidationError('Нельзя подписаться на самого себя')
