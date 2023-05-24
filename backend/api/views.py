@@ -50,10 +50,15 @@ class SubscribeView(APIView):
     def delete(self, request, pk):
         subscription = get_object_or_404(User, pk=pk)
         subscriber = request.user
-        subscription = get_object_or_404(
-            Subscription, subscription=subscription, subscriber=subscriber
+        users = Subscription.objects.filter(
+            subscriber=subscriber, subscription=subscription
         )
-        subscription.delete()
+        if not users.exists():
+            return Response(
+                {'errors': 'Вы не были подписаны'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        users.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

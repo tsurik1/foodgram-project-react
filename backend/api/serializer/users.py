@@ -2,6 +2,7 @@ from djoser.serializers import \
     UserCreateSerializer as DjoserUserCreateSerializer
 from djoser.serializers import UserSerializer as DjoserUserSerializer
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 
 from recipes.models import Recipe
 from users.models import Subscription, User
@@ -50,6 +51,20 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
         fields = ('subscriber', 'subscription')
+        validators = [UniqueTogetherValidator(
+            queryset=Subscription.objects.all(),
+            fields=['subscriber', 'subscription'],
+            message='Вы уже подписаны'
+        )]
+
+    def validate(self, data):
+        subscriber = data.get('subscriber')
+        subscription = data.get('subscription')
+        if subscriber == subscription:
+            raise serializers.ValidationError(
+                'Нельзя подписаться на самого себя!'
+            )
+        return data
 
     def to_representation(self, instance):
         request = self.context.get('request')
