@@ -12,7 +12,7 @@ from rest_framework.validators import ValidationError
 
 from users.models import Subscription, User
 from recipes.models import (
-    Ingredient, Recipe, Tag, ShoppingCart, Favorite, RecipeIngredient
+    Ingredient, Recipe, Tag, ShoppingCart, Favorite, RecipeIngredient,
 )
 from .permissions import AuthorOrReadOnly
 from .pagination import MyBasePagination

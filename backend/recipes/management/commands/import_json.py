@@ -15,15 +15,15 @@ class Command(BaseCommand):
             'recipes/data/ingredients.json', 'r', encoding='utf-8'
         ) as file:
             data = json.load(file)
-        ingredients_list = []
+        ingredient_list = []
         for item in data:
-            ingredients = Ingredient(
+            ingredient = Ingredient(
                 name=item['name'],
                 measurement_unit=item['measurement_unit']
             )
-            ingredients_list.append(ingredients)
+            ingredient_list.append(ingredient)
 
-        Ingredient.objects.bulk_create(ingredients_list)
+        Ingredient.objects.bulk_create(ingredient_list)
 
         tags = {'Завтрак': 'breakfast', 'Обед': 'lunch', 'Ужин': 'dinner'}
         for tag, slug in tags.items():
