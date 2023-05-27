@@ -13,11 +13,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = True
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-]
-
-CORS_URLS_REGEX = r'^/api/.*$'
 
 ALLOWED_HOSTS = []
 
@@ -29,7 +24,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'corsheaders',
     'rest_framework.authtoken',
     'django_filters',
     'djoser',
