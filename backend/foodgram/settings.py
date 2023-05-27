@@ -11,7 +11,7 @@ SECRET_KEY = secret_key
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = True
+DEBUG = False
 
 
 ALLOWED_HOSTS = []
