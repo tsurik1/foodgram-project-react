@@ -1,20 +1,13 @@
 import os
-import random
-import string
 from pathlib import Path
 
-secret_key = ''.join(random.SystemRandom().choice(
-    string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(50))
-
-# Use the new secret key in your Django project's settings file
-SECRET_KEY = secret_key
+SECRET_KEY = SECRET_KEY = os.getenv('SECRET_KEY', 'default')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = True
+DEBUG = False
 
-
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', 'web']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -63,12 +56,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),

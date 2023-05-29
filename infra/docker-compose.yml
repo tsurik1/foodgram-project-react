@@ -16,6 +16,7 @@ services:
       - ./.env
 
   backend:
+    image: yauhenitsuran/backend
     build: .
     restart: always
     volumes:
