@@ -2,9 +2,7 @@ version: '3.3'
 services:
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: yauhenitsuran/frontend
     volumes:
       - ../frontend/:/app/result_build/
 
@@ -17,7 +15,6 @@ services:
 
   backend:
     image: yauhenitsuran/backend
-    build: .
     restart: always
     volumes:
       - static_value:/app/static/
