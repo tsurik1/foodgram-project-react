@@ -42,7 +42,7 @@ jobs:
       - name: Push frontend
         uses: docker/build-push-action@v2
         with:
-          file: frontend/Dockerfile
+          context: frontend/
           push: true
           tags: yauhenitsuran/frontend:latest
   deploy:
