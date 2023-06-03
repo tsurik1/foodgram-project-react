@@ -39,7 +39,7 @@ jobs:
           context: backend
           file: backend/Dockerfile
           push: true
-          tags: yauhenitsuran/backend:latest
+          tags: yauhenitsuran/backend
       - name: Push frontend
         uses: docker/build-push-action@v2
         with:
