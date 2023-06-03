@@ -24,12 +24,12 @@ class RecipesAdmin(admin.ModelAdmin):
     list_display = ('name', 'author')
     list_filter = ('author', 'name', 'tags')
     search_fields = ('text',)
-    readonly_fields = ('favourites_count',)
+    readonly_fields = ('favorites_count',)
     inlines = (RecipeIngredientInline,)
 
-    def favourites_count(self, obj):
-        return obj.favourite_set.count()
-    favourites_count.short_description = 'Количество добавлений в избранное'
+    def favorites_count(self, obj):
+        return obj.favorites.count()
+    favorites_count.short_description = 'Количество добавлений в избранное'
 
 
 @admin.register(Ingredient)
