@@ -58,9 +58,9 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            sudo docker pull yauhenitsuran/backend
+            sudo docker pull yauhenitsuran/backend:v2.00
             sudo docker pull yauhenitsuran/frontend
-            docker-compose stop
+            sudo docker-compose stop
             sudo docker-compose rm backend
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
