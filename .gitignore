@@ -98,3 +98,7 @@ dmypy.json
 .vscode/
 
 frontend/node_modules/
+
+backend/static/
+
+backend/media/
