@@ -3,7 +3,7 @@ from django.contrib import admin
 from .models import (Ingredient,
                      Recipe,
                      RecipeIngredient,
-                     Tag,
+                     #  Tag,
                      ShoppingCart,
                      Favorite
                      )
@@ -38,11 +38,11 @@ class IngredientAdmin(admin.ModelAdmin):
     list_filter = ('name',)
 
 
-@admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    list_filter = ('name',)
-    prepopulated_fields = {'slug': ('slug',)}
+# @admin.register(Tag)
+# class TagAdmin(admin.ModelAdmin):
+#     list_display = ('name',)
+#     list_filter = ('name',)
+#     prepopulated_fields = {'slug': ('slug',)}
 
 
 @admin.register(ShoppingCart)
