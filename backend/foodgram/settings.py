@@ -8,9 +8,9 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'default')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['62.84.118.211', 'localhost', 'web', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', 'web', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -58,23 +58,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-DATABASES = { 
-    'default': { 
-        'ENGINE': 'django.db.backends.sqlite3', 
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'), 
-    } 
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
-#         'NAME': os.getenv('DB_NAME', 'postgres'),
-#         'USER': os.getenv('POSTGRES_USER', 'postgres'),
-#         'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
-#         'HOST': os.getenv('DB_HOST', 'db'),
-#         'PORT': os.getenv('DB_PORT', 5432)
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
+        'NAME': os.getenv('DB_NAME', 'postgres'),
+        'USER': os.getenv('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
+        'HOST': os.getenv('DB_HOST', 'db'),
+        'PORT': os.getenv('DB_PORT', 5432)
+    }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -118,12 +118,8 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
     'PERMISSIONS': {
-        # 'user_create': ('rest_framework.permissions.AllowAny',),
         'user': ('rest_framework.permissions.IsAuthenticated',),
         'user_list': ('rest_framework.permissions.AllowAny',),
-        # 'set_password': ('djoser.permissions.CurrentUserOrAdmin',),
-        # 'token_create': ('rest_framework.permissions.AllowAny',),
-        # 'token_destroy': ('rest_framework.permissions.IsAuthenticated',),
     },
     'SERIALIZERS': {
         'user_create': 'api.serializer.users.UserSerializer',
