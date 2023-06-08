@@ -14,16 +14,17 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         to='Tag',
         related_name='recipes',
-        verbose_name='Тег'
+        verbose_name='Теги'
     )
     ingredients = models.ManyToManyField(
         to='Ingredient',
         related_name='recipes',
         through='RecipeIngredient',
-        verbose_name='Ингредиент'
+        verbose_name='Ингредиенты'
     )
     cooking_time = models.PositiveIntegerField(
         verbose_name='Время приготовления',
+        default=1,
         validators=(
             MinValueValidator(
                 settings.LIMIT_VALUE,
@@ -37,13 +38,13 @@ class Recipe(models.Model):
     )
     image = models.ImageField(
         upload_to='img_recipe/',
-        blank=True,
         verbose_name='Загрузить фото'
     )
     author = models.ForeignKey(
         User,
         related_name='recipes',
-        verbose_name='Пользователь',
+        verbose_name='Автор',
+        null=True,
         on_delete=models.CASCADE
     )
     pub_date = models.DateTimeField(
@@ -122,10 +123,17 @@ class RecipeIngredient(models.Model):
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        verbose_name='ингридент'
+        verbose_name='ингредиент'
     )
     amount = models.PositiveSmallIntegerField(
-        verbose_name='количество'
+        verbose_name='количество',
+        validators=(
+            MinValueValidator(
+                settings.LIMIT_VALUE,
+                f'минимальное колличество'
+                f'{settings.LIMIT_VALUE}'
+            ),
+        )
     )
 
     class Meta:

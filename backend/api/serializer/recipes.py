@@ -50,6 +50,8 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
+        # if self.model.objects.filter(recipe=recipe, user=user).exists():
+        #     raise ValidationError('Рецепт уже добавлен')
         return model.objects.filter(user=request.user, recipe=obj).exists()
 
     def get_is_favorited(self, obj):
@@ -112,3 +114,22 @@ class RecipeSerializer(serializers.ModelSerializer):
         self.create_update(ingredients, instance)
         instance.tags.set(tags)
         return super().update(instance, validated_data)
+
+
+class ShortRecipeSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField(source='recipe.name')
+    image = serializers.SerializerMethodField()
+    cooking_time = serializers.IntegerField(source='recipe.cooking_time')
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time',)
+        read_only_fields = ('id', 'name', 'image', 'cooking_time',)
+
+    def get_image(self, obj):
+        request = self.context.get('request')
+        if obj.recipe.image:
+            url = obj.recipe.image.url
+            return request.build_absolute_uri(url)
+        return None

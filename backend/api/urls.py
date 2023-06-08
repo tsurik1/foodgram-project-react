@@ -3,20 +3,19 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from djoser.views import UserViewSet
 
-from api.views import (
+from .view.subscriptions import (
     SubscribeView,
-    SubscriptionView,
-    RecipeViewSet,
-    TagViewSet,
-    IngredientViewSet,
-    ShoppingCartView,
-    FavoriteView,
-    DownloadShoppingCart,
+    SubscriptionView
 )
+from .view.tags import TagViewSet
+from .view.ingredients import IngredientViewSet
+from .view.recipes import RecipeViewSet
+from .view.cart import DownloadShoppingCart
+from .view.favorite import FavoriteView
+from .view.cart import ShoppingCartView
 
 router = DefaultRouter()
 
-router.register('users', UserViewSet)
 router.register('recipes', RecipeViewSet, basename='recipes')
 router.register('tags', TagViewSet)
 router.register('ingredients', IngredientViewSet)
@@ -24,8 +23,15 @@ router.register('ingredients', IngredientViewSet)
 djoser_urlpatterns = [
     path('me/', UserViewSet.as_view({'get': 'me'}), name='me'),
     path(
-        'set_password/',
-        UserViewSet.as_view({'post': 'set_password/'}), name='set_password/'
+        '', UserViewSet.as_view({'post': 'create', 'get': 'list'}),
+        name='user_create'
+    ),
+    path(
+        '<int:id>/', UserViewSet.as_view({"get": "retrieve"}), name='user_pk'
+    ),
+    path(
+        'set_password/', UserViewSet.as_view({'post': 'set_password/'}),
+        name='set_password'
     )
 ]
 urlpatterns = [

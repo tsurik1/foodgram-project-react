@@ -1,13 +1,16 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
-SECRET_KEY = SECRET_KEY = os.getenv('SECRET_KEY', 'default')
+load_dotenv()
+
+SECRET_KEY = os.getenv('SECRET_KEY', 'default')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['62.84.118.211', 'localhost', 'web']
+ALLOWED_HOSTS = ['62.84.118.211', 'localhost', 'web', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -55,16 +58,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
-        'NAME': os.getenv('DB_NAME', 'postgres'),
-        'USER': os.getenv('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
-        'HOST': os.getenv('DB_HOST', 'db'),
-        'PORT': os.getenv('DB_PORT', 5432)
-    }
+DATABASES = { 
+    'default': { 
+        'ENGINE': 'django.db.backends.sqlite3', 
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'), 
+    } 
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
+#         'NAME': os.getenv('DB_NAME', 'postgres'),
+#         'USER': os.getenv('POSTGRES_USER', 'postgres'),
+#         'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
+#         'HOST': os.getenv('DB_HOST', 'db'),
+#         'PORT': os.getenv('DB_PORT', 5432)
+#     }
+# }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -89,8 +99,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = 'static/'
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
@@ -110,13 +118,12 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
     'PERMISSIONS': {
-        'user_create': ('rest_framework.permissions.AllowAny',),
-        'user': ('rest_framework.permissions.AllowAny',),
+        # 'user_create': ('rest_framework.permissions.AllowAny',),
+        'user': ('rest_framework.permissions.IsAuthenticated',),
         'user_list': ('rest_framework.permissions.AllowAny',),
-        'user_delete': ('djoser.permissions.CurrentUserOrAdmin',),
-        'set_password': ('djoser.permissions.CurrentUserOrAdmin',),
-        'token_create': ('rest_framework.permissions.AllowAny',),
-        'token_destroy': ('rest_framework.permissions.IsAuthenticated',),
+        # 'set_password': ('djoser.permissions.CurrentUserOrAdmin',),
+        # 'token_create': ('rest_framework.permissions.AllowAny',),
+        # 'token_destroy': ('rest_framework.permissions.IsAuthenticated',),
     },
     'SERIALIZERS': {
         'user_create': 'api.serializer.users.UserSerializer',
