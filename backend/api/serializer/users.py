@@ -38,14 +38,12 @@ class UserListSerializer(DjoserUserSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        user = self.context.get('request')
-        if user is None or user.user.is_anonymous:
+        request = self.context.get('request')
+        if request.user.is_anonymous or (obj.pk == request.user.pk):
             return False
-        author = Subscription.objects.filter(
-            subscriber=user.user, subscription=obj.pk)
-        if obj.pk == user.user.pk:
-            return False
-        return author.exists()
+        return Subscription.objects.filter(
+            subscriber=request.user, subscription=obj.pk
+        ).exists()
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
@@ -58,15 +56,6 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             fields=['subscriber', 'subscription'],
             message='Вы уже подписаны'
         )]
-
-    def validate(self, data):
-        subscriber = data.get('subscriber')
-        subscription = data.get('subscription')
-        if subscriber == subscription:
-            raise serializers.ValidationError(
-                'Нельзя подписаться на самого себя'
-            )
-        return data
 
     def to_representation(self, instance):
         request = self.context.get('request')
