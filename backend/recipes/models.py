@@ -198,3 +198,8 @@ class ShoppingCart(models.Model):
 
     def __str__(self):
         return self.recipe
+
+
+class CommandHistory(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    is_executed = models.BooleanField(default=False)

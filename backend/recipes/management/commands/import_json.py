@@ -1,17 +1,11 @@
 from django.core.management.base import BaseCommand
-from django.db import models
 
 import json
 from random import choice
 from faker import Faker
 
-from recipes.models import Ingredient, Tag
+from recipes.models import Ingredient, Tag, CommandHistory
 from users.models import User, Subscription
-
-
-class CommandHistory(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    is_executed = models.BooleanField(default=False)
 
 
 class Command(BaseCommand):
