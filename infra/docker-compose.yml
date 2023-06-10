@@ -16,7 +16,7 @@ services:
       - ./.env
 
   backend:
-    image: yauhenitsuran/backend:v2.00
+    image: yauhenitsuran/backend:v1
     restart: always
     expose:
       - 8000
