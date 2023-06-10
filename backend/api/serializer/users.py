@@ -39,7 +39,7 @@ class UserListSerializer(DjoserUserSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        if request.user.is_anonymous or (obj.pk == request.user.pk):
+        if request is None or request.user.is_anonymous:
             return False
         return Subscription.objects.filter(
             subscriber=request.user, subscription=obj.pk

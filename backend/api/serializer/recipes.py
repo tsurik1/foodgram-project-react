@@ -6,9 +6,9 @@ from rest_framework import serializers
 from recipes.models import (
     Recipe, Tag, Favorite, ShoppingCart, RecipeIngredient, Ingredient,
 )
-from .ingredients import IngredientAmountSerializer
-from .users import UserListSerializer
-from .tags import TagSerializer
+from api.serializer.ingredients import IngredientAmountSerializer
+from api.serializer.users import UserListSerializer
+from api.serializer.tags import TagSerializer
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
@@ -50,8 +50,6 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
-        # if self.model.objects.filter(recipe=recipe, user=user).exists():
-        #     raise ValidationError('Рецепт уже добавлен')
         return model.objects.filter(user=request.user, recipe=obj).exists()
 
     def get_is_favorited(self, obj):
@@ -89,12 +87,15 @@ class RecipeSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def add_ingredients(self, ingredients, recipe):
+        relations = []
         for ingredient_data in ingredients:
-            RecipeIngredient.objects.get_or_create(
+            ingredient = Ingredient.objects.get(id=ingredient_data['id'])
+            relations.append(RecipeIngredient(
                 recipe=recipe,
-                ingredient=ingredient_data['id'],
+                ingredient=ingredient,
                 amount=ingredient_data['amount']
-            )
+            ))
+        RecipeIngredient.objects.bulk_create(relations)
 
     @transaction.atomic
     def create(self, validated_data):
