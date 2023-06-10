@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
+
 from users.models import User
 
 

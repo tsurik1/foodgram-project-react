@@ -5,7 +5,6 @@ from rest_framework import status, viewsets
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.mixins import DestroyModelMixin, CreateModelMixin
 
 from recipes.models import Recipe, Favorite
 from recipes.models import Recipe
@@ -31,7 +30,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-class AddDeleteView(CreateModelMixin, DestroyModelMixin, GenericAPIView):
+class AddDeleteView(GenericAPIView):
     add_model = Recipe
     delete_model = Favorite
     add_serializer = None

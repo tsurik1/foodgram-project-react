@@ -42,7 +42,7 @@ class UserListSerializer(DjoserUserSerializer):
         if request is None or request.user.is_anonymous:
             return False
         return Subscription.objects.filter(
-            subscriber=request.user, subscription=obj.pk
+            subscriber=request.user, subscription_id=obj.pk
         ).exists()
 
 

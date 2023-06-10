@@ -89,10 +89,9 @@ class RecipeSerializer(serializers.ModelSerializer):
     def add_ingredients(self, ingredients, recipe):
         relations = []
         for ingredient_data in ingredients:
-            ingredient = Ingredient.objects.get(id=ingredient_data['id'])
             relations.append(RecipeIngredient(
                 recipe=recipe,
-                ingredient=ingredient,
+                ingredient_id=ingredient_data['id'],
                 amount=ingredient_data['amount']
             ))
         RecipeIngredient.objects.bulk_create(relations)
