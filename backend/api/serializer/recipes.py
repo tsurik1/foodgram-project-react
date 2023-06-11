@@ -13,7 +13,7 @@ from api.serializer.tags import TagSerializer
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
 
-    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    id = serializers.IntegerField(source='ingredient_id')
 
     class Meta:
         model = RecipeIngredient
@@ -89,10 +89,9 @@ class RecipeSerializer(serializers.ModelSerializer):
     def add_ingredients(self, ingredients, recipe):
         relations = []
         for ingredient_data in ingredients:
-            ingredient = Ingredient.objects.get(id=ingredient_data['id'])
             relations.append(RecipeIngredient(
                 recipe=recipe,
-                ingredient_id=ingredient,
+                ingredient_id=ingredient_data['ingredient_id'],
                 amount=ingredient_data['amount']
             ))
         RecipeIngredient.objects.bulk_create(relations)
@@ -101,7 +100,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
-        recipe = super().create(**validated_data)
+        recipe = super().create(validated_data)
         recipe.tags.set(tags)
         self.add_ingredients(ingredients, recipe)
         return recipe
