@@ -3,8 +3,19 @@ name: Foodgram
 on: [push]
 
 jobs:
+  copy_files_to_server:
+    name: Copy docs
+    uses: garygrossgarten/github-action-scp@release
+    with:
+      local: docs
+      remote: /${{ secrets.USER }}/foodgramm/docs/
+      host: ${{ secrets.HOST }}
+      username: ${{ secrets.USER }}
+      key: ${{ secrets.SSH_KEY }}
+      passphrase: ${{ secrets.PASSPHRASE }}
   tests:
     runs-on: ubuntu-latest
+    needs: copy_files_to_server
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python

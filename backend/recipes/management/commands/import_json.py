@@ -53,13 +53,14 @@ class Command(BaseCommand):
             email = fake.email()
             password = fake.password()
 
-            User.objects.create(
+            user = User.objects.create(
                 username=username,
                 first_name=first_name,
                 last_name=last_name,
-                email=email,
-                password=password
+                email=email
             )
+            user.set_password(password)
+            user.save()
 
         users = User.objects.all()
         for user in users:
