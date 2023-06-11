@@ -21,7 +21,7 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
     class Meta:
-        ordering = ['username']
+        ordering = ('username',)
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
 
@@ -50,6 +50,7 @@ class Subscription(models.Model):
     )
 
     class Meta:
+        ordering = ('subscriber', 'subscription',)
         constraints = [
             models.UniqueConstraint(
                 fields=['subscriber', 'subscription'],
