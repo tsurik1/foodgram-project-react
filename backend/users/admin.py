@@ -12,3 +12,4 @@ class UsersAdmin(admin.ModelAdmin):
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('pk', 'subscriber', 'subscription',)
+    ordering = ('subscriber', 'subscription',)
