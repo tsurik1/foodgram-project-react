@@ -39,7 +39,7 @@ jobs:
           context: backend
           file: backend/Dockerfile
           push: true
-          tags: yauhenitsuran/backend:v2.00
+          tags: yauhenitsuran/backend:latest
       - name: Push frontend
         uses: docker/build-push-action@v2
         with:
@@ -58,8 +58,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            sudo docker pull yauhenitsuran/backend:v2.00
-            sudo docker pull yauhenitsuran/frontend
+            sudo docker pull yauhenitsuran/backend:latest
+            sudo docker pull yauhenitsuran/frontend:latest
             sudo docker-compose stop
             sudo docker-compose rm backend
             touch .env
