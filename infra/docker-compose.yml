@@ -2,7 +2,7 @@ version: '3.3'
 services:
 
   frontend:
-    image: yauhenitsuran/frontend:latest
+    image: yauhenitsuran/frontend
     volumes:
       - ../frontend/:/app/result_build/
 
@@ -16,7 +16,7 @@ services:
       - ./.env
 
   backend:
-    image: yauhenitsuran/backend:latest
+    image: yauhenitsuran/backend
     restart: always
     expose:
       - 8000
