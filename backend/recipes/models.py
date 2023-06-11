@@ -168,7 +168,7 @@ class Favorite(models.Model):
         verbose_name_plural = 'избранные рецепты'
 
     def __str__(self):
-        return self.recipe
+        return f'{self.user}, {self.recipe}'
 
 
 class ShoppingCart(models.Model):
@@ -198,7 +198,7 @@ class ShoppingCart(models.Model):
         verbose_name_plural = 'рецепты в корзине'
 
     def __str__(self):
-        return self.recipe
+        return f'{self.user}, {self.recipe}'
 
 
 class CommandHistory(models.Model):
