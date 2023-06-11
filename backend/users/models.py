@@ -27,6 +27,12 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+    def clean(self):
+        if self.pk is not None:
+            old_user = User.objects.get(pk=self.pk)
+            if self.password != old_user.password:
+                raise ValidationError("Нельзя изменять пароль")
+
 
 class Subscription(models.Model):
     subscriber = models.ForeignKey(
