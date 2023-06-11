@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from recipes.models import ShoppingCart
-from .recipes import ShortRecipeSerializer
+from api.serializer.recipes import ShortRecipeSerializer
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
