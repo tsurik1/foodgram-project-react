@@ -8,7 +8,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'default')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['158.160.52.188', 'localhost', 'web', '127.0.0.1']
 
