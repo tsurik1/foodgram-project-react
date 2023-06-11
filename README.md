@@ -54,11 +54,11 @@ docker-compose exec backend python manage.py import_json
 ```
 
 ### Публичный IP
-http://62.84.118.211
+http://158.160.52.188
 
 ### админка
-- login: admin@mail.ru
-- password: qwe12345434
+- login: admin3@mail.ru
+- password: admin12345434
 
 # Автор
 https://github.com/tsurik1
