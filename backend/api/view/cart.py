@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from recipes.models import Recipe, ShoppingCart, RecipeIngredient
 from api.serializer.cart import ShoppingCartSerializer
-from view.recipes import AddDeleteView
+from api.view.recipes import AddDeleteView
 
 
 class ShoppingCartView(AddDeleteView):
